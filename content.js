@@ -106,6 +106,21 @@ function getAudioFromIndexedDB(db, id) {
   });
 }
 
+// Function to delete audio from IndexedDB
+function deleteAudioFromIndexedDB(db, id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['audios'], 'readwrite');
+    const store = transaction.objectStore('audios');
+    const request = store.delete(id);
+    request.onsuccess = () => {
+      resolve();
+    };
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+  });
+}
+
 // Handle click on "Ask IBM Granite" button using event delegation
 document.body.addEventListener('click', async (event) => {
   if (selectedText.length > 200) {
@@ -122,7 +137,7 @@ document.body.addEventListener('click', async (event) => {
       await delay(3000);
 
       // Send the selected text to the ElevenLabs API
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x', {
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/N2lVS1w4EtoT3dr4eOWO', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +174,19 @@ document.body.addEventListener('click', async (event) => {
       // Create an object URL for the audio and play it
       const audioURL = URL.createObjectURL(retrievedAudioBlob);
       const audio = new Audio(audioURL);
+
+      // Play the audio
       audio.play();
+
+      // After the audio has finished playing, delete it from IndexedDB
+      audio.addEventListener('ended', async () => {
+        // Revoke the object URL
+        URL.revokeObjectURL(audioURL);
+
+        // Delete the audio from IndexedDB
+        await deleteAudioFromIndexedDB(db, audioId);
+        console.log('Audio deleted from IndexedDB after playback.');
+      });
 
       // Re-enable the button
       askButton.disabled = false;

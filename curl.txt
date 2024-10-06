@@ -1,0 +1,17 @@
+how to send request to elevenlabs api using curl:
+'9BWtsMINqrJLrRacOk9x' - voice_id
+'eleven_multilingual_v2' - model_id
+
+curl --request POST \
+  --url https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x \
+  --header 'Content-Type: application/json' \
+  --header 'xi-api-key: ' \
+  --data '{
+  "text": "Imagine you'\''re watching a tropical storm unfold—massive winds, heavy rainfall, and towering waves. Now, imagine if that storm was supercharged, way more intense than we'\''ve seen before. That’s essentially what climate change is doing to tropical storms and hurricanes. Warmer ocean temperatures act like fuel for these storms, giving them the energy to grow stronger and more destructive.",
+  "model_id": "eleven_multilingual_v2",
+  "voice_settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75
+  },
+  "previous_request_ids": []
+}'
